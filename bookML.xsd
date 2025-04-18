@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/bookML" xmlns="http://www.example.org/bookML" elementFormDefault="qualified">
+    
+    <!-- 기타 기본 정의 -->
+    <xsd:element name="price" type="priceType"></xsd:element>
+
+    <xsd:element name="pages">
+    	<xsd:simpleType>
+    		<xsd:restriction base="xsd:integer">
+    			<xsd:minInclusive value="1"/>
+    			<xsd:maxInclusive value="2000"/>
+    		</xsd:restriction>
+    	</xsd:simpleType>
+    </xsd:element>
+    
+    <xsd:element name="rating">
+    	<xsd:simpleType>
+    		<xsd:restriction base="xsd:integer">
+    			<xsd:minInclusive value="1"/>
+    			<xsd:maxInclusive value="5"/>
+    		</xsd:restriction>
+    	</xsd:simpleType>
+    </xsd:element>
+
+    <xsd:element name="coverImage" type="xsd:string"></xsd:element>
+    
+    
+    <!-- 이북을 위한 정의 -->
+    <xsd:element name="format" type="xsd:string"></xsd:element>
+
+	<xsd:simpleType name="unitType">
+		<xsd:restriction base="xsd:string">
+    			<xsd:pattern value="B|KB|MB|GB"/>
+    	</xsd:restriction>
+	</xsd:simpleType>
+		
+    <xsd:complexType name="sizeType">
+    	<xsd:sequence>
+    		<xsd:element name="sizeNum" type="xsd:decimal"/> 
+    	</xsd:sequence>
+    	<xsd:attribute name="unit"/>
+    </xsd:complexType>
+    
+    <!-- 가격을 위한 정의 -->
+    <xsd:complexType name="priceType">
+    	<xsd:sequence>
+    		<xsd:element name="listPrice">
+    			<xsd:simpleType>
+            		<xsd:restriction base="xsd:decimal">
+                		<xsd:minExclusive value="0"/>
+            		</xsd:restriction>
+        		</xsd:simpleType>
+    		</xsd:element>
+    		<xsd:element name="salesPrice">
+    			<xsd:complexType>
+    				<xsd:simpleContent>
+    					<xsd:extension base="xsd:decimal">
+    						<xsd:attribute name="discountRate" type="discountRateType"/>
+    					</xsd:extension>
+    				</xsd:simpleContent>
+    			</xsd:complexType>
+    		</xsd:element>
+    	</xsd:sequence>
+    	<xsd:attribute name="currency" type="currencyType" default="won"/>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="currencyType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:pattern value="won|dollor|yen"/>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="discountRateType">
+    	<xsd:restriction base="xsd:integer">
+    		<xsd:minInclusive value="0"/>
+    		<xsd:maxInclusive value="80"/>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+    <!-- 날짜를 위한 정의 -->
+    <xsd:attributeGroup name="dateAttrGroup">
+    	<xsd:attribute name="year" use="required">
+    		<xsd:simpleType>
+    			<xsd:restriction base="xsd:integer">
+    				<xsd:minInclusive value="1900"/>
+    			<xsd:maxInclusive value="2025"/>
+    				</xsd:restriction>
+  		  </xsd:simpleType>
+    	</xsd:attribute>
+    	
+    	<xsd:attribute name="month" use="required">
+    		<xsd:simpleType>
+    			<xsd:restriction base="xsd:integer">
+    				<xsd:minInclusive value="1"/>
+   					<xsd:maxInclusive value="12"/>
+    			</xsd:restriction>
+   			</xsd:simpleType>
+    	</xsd:attribute>
+		<xsd:attribute name="day" use="required">
+			<xsd:simpleType>
+    			<xsd:restriction base="xsd:integer">
+   					<xsd:minInclusive value="1"/>
+   					<xsd:maxInclusive value="31"/>
+    			</xsd:restriction>
+    		</xsd:simpleType>
+		</xsd:attribute>
+    </xsd:attributeGroup>
+    
+    <xsd:element name="publishDate">
+    	<xsd:complexType>
+    		<xsd:attributeGroup ref="dateAttrGroup"/>
+    	</xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="revisionDate">
+    	<xsd:complexType>
+    		<xsd:attributeGroup ref="dateAttrGroup"/>
+    	</xsd:complexType>
+    </xsd:element>
+    
+    <!-- ISBN 타입 정의 -->
+    <xsd:simpleType name="ISBNType">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:pattern value="(97(8|9))?-\d{9}-\d"/> 
+    	</xsd:restriction>
+    </xsd:simpleType>
+    
+ <!-- book, ebook, newEBook과 그 타입들 정의 -->
+    <xsd:complexType name="bookType">
+    	<xsd:sequence>
+    		<xsd:element name="title" type="xsd:string" minOccurs="1"/>
+    		<xsd:element name="originalTitle" type="xsd:string" minOccurs="0"/>
+    		<xsd:element name="author" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+    		<xsd:element name="translator" type="xsd:string" minOccurs="0"/>
+    		<xsd:element name="publisher" type="xsd:string" minOccurs="1"/>
+    		<xsd:element ref="publishDate" minOccurs="1"/>
+    		<xsd:element ref="revisionDate" minOccurs="0" maxOccurs="unbounded"/>
+    		<xsd:element ref="price" minOccurs="1"/>
+    		<xsd:element ref="pages" minOccurs="1"/>
+    		<xsd:element ref="rating" minOccurs="1"/>
+    		<xsd:element ref="category" minOccurs="1" maxOccurs="unbounded"/>
+    		<xsd:element name="coverImage" type="xsd:anyURI"/>
+    		<xsd:element name="description" type="xsd:string"/>
+    		<xsd:element name="review" type="xsd:string" minOccurs="0" maxOccurs="50"/>
+    	</xsd:sequence>
+    	<xsd:attribute name="isbn" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="eBookType">
+    	<xsd:complexContent>
+    		<xsd:extension base="bookType">
+    			<xsd:sequence>
+    				<xsd:element name="format" type="xsd:string"/>
+    				<xsd:element name="size" type="sizeType"/>
+    				<xsd:element name="period" type="xsd:integer"/>
+    			</xsd:sequence>
+    		</xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="newEBookType">
+    	<xsd:complexContent>
+    		<xsd:restriction base="eBookType">
+    		<xsd:sequence>
+    			<xsd:element name="title" type="xsd:string" minOccurs="1"/>
+    			<xsd:element name="originalTitle" type="xsd:string" minOccurs="0"/>
+    			<xsd:element name="author" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+    			<xsd:element name="translator" type="xsd:string" minOccurs="0"/>
+    			<xsd:element name="publisher" type="xsd:string" minOccurs="1"/>
+    			<xsd:element ref="publishDate" minOccurs="1"/>
+    			<xsd:element ref="revisionDate" minOccurs="0" maxOccurs="0"/>
+    			<xsd:element ref="price" minOccurs="1"/>
+    			<xsd:element ref="pages" minOccurs="1"/>
+    			<xsd:element ref="rating" minOccurs="1"/>
+    			<xsd:element ref="category" minOccurs="1" maxOccurs="unbounded"/>
+    			<xsd:element name="coverImage" type="xsd:anyURI"/>
+    			<xsd:element name="description" type="xsd:string"/>
+    			<xsd:element name="review" type="xsd:string" minOccurs="0" maxOccurs="50"/>
+    			<xsd:element name="format" type="xsd:string"/>
+    			<xsd:element name="size" type="sizeType"/>
+    			<xsd:element name="period">	
+    			<xsd:simpleType>
+    				<xsd:restriction base="xsd:integer">
+    					<xsd:minInclusive value="0"/>
+    					<xsd:maxInclusive value="21"/>
+    				</xsd:restriction>
+    			</xsd:simpleType>
+    			</xsd:element>
+    		</xsd:sequence>
+    		<xsd:attribute name="isbn" use="required"/>
+    		</xsd:restriction>
+    	</xsd:complexContent>
+    </xsd:complexType>
+    <!-- 오답노트: 오타 주의...................  -->
+    
+    <xsd:element name="book" type="bookType"/>
+    <xsd:element name="eBook" type="eBookType"/>
+    <xsd:element name="newEBook" type="newEBookType"/>
+    
+    <!--  category 정의 -->
+    <xsd:element name="category" type="xsd:string"/>
+    
+   <!-- 그외 대분류 정의 --> 
+    <xsd:element name="bookList">
+    	<xsd:complexType>
+    		<xsd:sequence>
+    			<xsd:element ref="book" minOccurs="0" maxOccurs="unbounded"/>
+    			<xsd:element ref="eBook" minOccurs="0" maxOccurs="unbounded"/>
+    			<xsd:element ref="newEBook" minOccurs="0" maxOccurs="unbounded"/>
+    		</xsd:sequence>
+    	</xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="bookCategory">
+    	<xsd:complexType>
+    		<xsd:sequence>
+    			<xsd:element ref="category" minOccurs="0" maxOccurs="unbounded">
+    			</xsd:element>
+    		</xsd:sequence>
+    	</xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="catalog">
+    	<xsd:complexType>
+    		<xsd:sequence>
+    			<xsd:element ref="bookList"/>
+    			<xsd:element ref="bookCategory"/>
+    		</xsd:sequence>
+    	</xsd:complexType>
+    </xsd:element>
+</xsd:schema>
